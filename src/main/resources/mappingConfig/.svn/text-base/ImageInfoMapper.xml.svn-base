@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.snda.cloud.virtulization.resource.dao.IImageInfoDao">
+	<resultMap type="imageInfo" id="imageInfo">
+		<result property="imageId" column="IMAGE_ID" />
+		<result property="name" column="NAME" />
+		<result property="status" column="STATUS" />
+		<result property="userId" column="USER_ID" />
+		<result property="osTypeId" column="OS_TYPE_ID" />
+		<result property="osVersion" column="OS_VERSION" />
+		<result property="osBit" column="OS_BIT" />
+		<result property="imageType" column="IMAGE_TYPE" />
+		<result property="imageOrg" column="IMAGE_ORG" />
+		<result property="isLocked" column="IS_LOCKED" />
+		<result property="isEnabled" column="IS_ENABLED" />
+	</resultMap>
+	
+	<select id="selectImageInfo" parameterType="imageInfo" resultMap="imageInfo">
+		SELECT
+			IMAGE_ID, NAME, STATUS, USER_ID, OS_TYPE_ID,
+			OS_VERSION, OS_BIT, IMAGE_TYPE, IMAGE_ORG,
+			IS_LOCKED, IS_ENABLED
+		FROM
+			IMAGE_INFO
+		WHERE
+			IS_ENABLED = 1
+		<if test="imageId != null">
+		AND
+			IMAGE_ID = #{imageId}
+		</if>
+		<if test="name != null">
+		AND
+			NAME = #{name}
+		</if>
+		<if test="status != null">
+		AND
+			STATUS = #{status}
+		</if>
+		<if test="userId != null">
+		AND
+			USER_ID = #{userId}
+		</if>
+		<if test="osTypeId != null">
+		AND
+			OS_TYPE_ID = #{osTypeId}
+		</if>
+		<if test="osVersion != null">
+		AND
+			OS_VERSION = #{osVersion}
+		</if>
+		<if test="osBit != null">
+		AND
+			OS_BIT = #{osBit}
+		</if>
+		<if test="imageType != null">
+		AND
+			IMAGE_TYPE = #{imageType}
+		</if>
+		<if test="imageOrg != null">
+		AND
+			IMAGE_ORG = #{imageOrg}
+		</if>
+		<if test="isLocked != null">
+		AND
+			IS_LOCKED = #{isLocked}
+		</if>
+		<if test="isEnabled != null">
+		AND
+			IS_ENABLED = #{isEnabled}
+		</if>
+		ORDER BY OS_TYPE_NAME, `NAME`
+			
+	</select>
+	
+</mapper>

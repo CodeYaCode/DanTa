@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.snda.cloud.virtulization.resource.dao.IHostCoreDao">
+	<resultMap id="hostCore" type="hostCore">
+		<result property="coreId" column="CORE_ID" />
+		<result property="coreUuid" column="CORE_UUID" />
+		<result property="cpTotal" column="CP_TOTAL" />
+		<result property="cpLeft" column="CP_LEFT" />
+		<result property="pCpuNo" column="PCPU_NO" />
+		<result property="hostId" column="HOST_ID" />
+		<result property="createTime" column="CREATE_TIME" />
+		<result property="updateTime" column="UPDATE_TIME" />
+		<result property="deleted" column="IS_DELETED" />
+		<result property="status" column="STATUS" />
+	</resultMap>
+	
+	<select id="selectHostCoreByHostId" parameterType="String" resultMap="hostCore">
+		SELECT
+			CORE_ID, CORE_UUID, CP_TOTAL, CP_LEFT, PCPU_NO, HOST_ID, CREATE_TIME,
+			UPDATE_TIME, IS_DELETED, `STATUS`
+		FROM
+			HOST_CORE
+		WHERE
+			HOST_ID = #{hostId}
+		AND
+			`STATUS` != 'RESERVED'
+	</select>
+	
+	<select id="selectHostCore" parameterType="hostCore" resultMap="hostCore">
+		SELECT 
+			CORE_ID, CORE_UUID, CP_TOTAL, CP_LEFT, PCPU_NO, HOST_ID, 
+			CREATE_TIME, UPDATE_TIME, IS_DELETED, STATUS
+  	    FROM 
+  	    	HOST_CORE
+        WHERE 
+        	IS_DELETED = FALSE
+        <if test="hostId!=null">
+        	AND HOST_ID=#{hostId}
+        </if>
+        <if test="status!=null">
+        	AND STATUS=#{status}
+        </if>
+        <if test="cpLeft!=null">
+           <![CDATA[
+			  AND CP_LEFT >= #{cpLeft}
+		   ]]>
+        </if>
+        <if test="unassignable != null">
+        	AND CP_LEFT=CP_TOTAL
+        </if>
+	</select>
+	
+	<select id="selectHostTotalCpValue" parameterType="String" resultType="int">
+		SELECT CP_TOTAL FROM HOST_CORE WHERE HOST_ID=#{hostId} limit 1
+	</select>
+	
+	<select id="selectCoreTotal" resultType="int">
+		SELECT
+			SUM(CORE_COUNT) AS CORE_TOTAL
+		FROM
+			(
+				SELECT
+					HOST_ID,
+					COUNT(CORE_ID) AS CORE_COUNT
+				FROM
+					HOST_CORE
+				WHERE
+					IS_DELETED = 0
+				GROUP BY
+					HOST_ID
+			) A
+	</select>
+	
+	<select id="selectCoreUsed" resultType="int">
+		SELECT
+			COUNT(*)
+		FROM
+			HOST_CORE
+		WHERE
+			CP_LEFT != CP_TOTAL
+		AND CP_LEFT &lt; CP_TOTAL
+	</select>
+	
+	<select id="selectCoreLeft" resultType="int">
+		SELECT
+			COUNT(*)
+		FROM
+			HOST_CORE
+		WHERE
+			CP_TOTAL = CP_LEFT
+		AND IS_DELETED = 0
+		AND HOST_ID IN (
+			SELECT
+				HOST_ID
+			FROM
+				HOST_INFO
+			WHERE
+				IS_ENABLED = 3
+			AND FLAG = 'ONLINE'
+			AND `STATUS` = 'Running'
+		)
+	</select>
+	
+	<select id="selectCoreUnopen" resultType="int">
+		SELECT
+			SUM(CORE_COUNT) AS CORE_UNOPEN_TOTAL
+		FROM
+			(
+				SELECT
+					A.HOST_ID,
+					COUNT(CORE_ID) AS CORE_COUNT
+				FROM
+					HOST_CORE A,
+					HOST_INFO B
+				WHERE
+					A.IS_DELETED = 0
+				AND A.HOST_ID = B.HOST_ID
+				AND B.FLAG = 'OFFLINE'
+				AND B.IS_ENABLED = 3
+				GROUP BY
+					HOST_ID
+			) A
+	</select>
+	
+	<select id="selectCoreReserved" resultType="int">
+		SELECT
+			SUM(CORE_COUNT) AS CORE_RESERVED_TOTAL
+		FROM
+			(
+				SELECT
+					HOST_ID,
+					COUNT(CORE_ID) AS CORE_COUNT
+				FROM
+					HOST_CORE
+				WHERE
+					IS_DELETED = 0
+				AND `STATUS` = 'RESERVED'
+				GROUP BY
+					HOST_ID
+			) A
+	</select>
+</mapper>

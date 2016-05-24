@@ -1,0 +1,44 @@
+#The mysql database config#
+#datasource.driver=com.mysql.jdbc.Driver
+#datasource.url=jdbc:mysql://172.16.200.2:3306/DB_CLOUDCORE?useUnicode=true&amp;characterEncoding=utf-8
+#datasource.username=root
+#datasource.password=rd333$$$
+#datasource.min.idle=20
+#datasource.max.idle=30
+#datasource.max.active=30
+
+#The mysql database config#	#无锡测试环境  10.241.226.110
+datasource.driver=com.mysql.jdbc.Driver
+datasource.url=jdbc:mysql://10.241.226.110:3306/DB_CLOUDCORE?useUnicode=true&amp;characterEncoding=utf-8
+datasource.username=root
+datasource.password=Dev@2015
+datasource.min.idle=20
+datasource.max.idle=30
+datasource.max.active=30
+
+#The mysql database config#	#北京测试环境 10.241.226.112
+datasource.driver=com.mysql.jdbc.Driver
+datasource.url=jdbc:mysql://10.241.226.112:3306/DB_CLOUDCORE?useUnicode=true&amp;characterEncoding=utf-8
+datasource.username=root
+datasource.password=Dev@2015
+datasource.min.idle=20
+datasource.max.idle=30
+datasource.max.active=30
+
+#The mysql database config# #北京线上环境 10.177.2.92
+datasource.driver=com.mysql.jdbc.Driver
+datasource.url=jdbc:mysql://10.177.2.92:3306/DB_CLOUDCORE?useUnicode=true&amp;characterEncoding=utf-8
+datasource.username=dbro
+datasource.password=dhq2xwpdvk28vft0hfwrgckd5ardn4wu
+datasource.min.idle=20
+datasource.max.idle=30
+datasource.max.active=30
+
+#The mysql database config# #无锡线上环境 10.176.2.83
+datasource.driver=com.mysql.jdbc.Driver
+datasource.url=jdbc:mysql://10.176.2.83:3306/DB_CLOUDCORE?useUnicode=true&amp;characterEncoding=utf-8
+datasource.username=dbro
+datasource.password=dhq2xwpdvk28vft0hfwrgckd5ardn4wu
+datasource.min.idle=20
+datasource.max.idle=30
+datasource.max.active=30

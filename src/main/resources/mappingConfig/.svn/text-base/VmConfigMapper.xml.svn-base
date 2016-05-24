@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.snda.cloud.virtulization.resource.dao.IVmConfigDao">
+	<resultMap type="vmConfig" id="vmConfig">
+		<result property="typeId" column="TYPE_ID" />
+		<result property="typeLabel" column="TYPE_LABEL" />
+		<result property="configId" column="CONFIG_ID" />
+		<result property="cpu" column="CPU" />
+		<result property="ecuPerCpu" column="ECU_PERCPU" />
+		<result property="mem" column="MEM" />
+		<result property="disk" column="DISK" />
+		<result property="sysDisk" column="SYS_DISK" />
+		<result property="dataDisk" column="DATA_DISK" />
+		<result property="swap" column="SWAP" />
+		<result property="deleted" column="IS_DELETED" />
+		<result property="weight" column="WEIGHT" />
+		<result property="data1" column="DATA1" />
+	</resultMap>
+	
+	<select id="selectVmConfig" parameterType="vmConfig" resultMap="vmConfig">
+		SELECT
+			A.TYPE_ID, A.TYPE_LABEL, A.CONFIG_ID, A.CPU, A.ECU_PERCPU, A.MEM, A.DISK,
+			A.SYS_DISK, A.DATA_DISK, A.SWAP, A.IS_DELETED, A.WEIGHT, B.DATA1
+		FROM
+			VM_CONFIG A, VM_TYPE B
+		WHERE
+			A.IS_DELETED != 1
+		AND
+			A.TYPE_ID = B.TYPE_ID
+		<if test="typeId != null">
+			AND
+				TYPE_ID = #{typeId}
+		</if>
+		ORDER BY
+			B.DATA1, CPU, MEM, DISK
+	</select>
+</mapper>

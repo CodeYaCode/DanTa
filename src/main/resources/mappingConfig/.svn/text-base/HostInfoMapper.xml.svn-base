@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.snda.cloud.virtulization.resource.dao.IHostInfoDao">
+	<resultMap id="hostInfo" type="hostInfo">
+		<result property="hostId" column="HOST_ID" />
+		<result property="name" column="NAME" />
+		<result property="status" column="STATUS" />
+		<result property="cpuInit" column="CPU_INIT" />
+		<result property="cpuLeft" column="CPU_LEFT" />
+		<result property="memInit" column="MEM_INIT" />
+		<result property="memLeft" column="MEM_LEFT" />
+		<result property="memTotal" column="MEM_TOTAL" />
+		<result property="diskInit" column="DISK_INIT" />
+		<result property="diskLeft" column="DISK_LEFT" />
+		<result property="diskReserved" column="DISK_RESERVED" />
+		<result property="enabled" column="IS_ENABLED" />
+		<result property="flag" column="FLAG" />
+		<result property="data1" column="DATA1" />
+		<result property="maxVmNum" column="MAX_VM_NUM" />
+		<result property="maxSharedCoreNum" column="MAX_SHARED_CORE" />
+		<result property="vmNum" column="VM_NUM" />
+	</resultMap>
+	
+	<select id="selectHostInfo" parameterType="hostInfo" resultMap="hostInfo">
+		SELECT
+			HOST_ID, NAME, `STATUS`, CPU_INIT, CPU_LEFT, MEM_INIT, MEM_LEFT, MEM_TOTAL
+			DISK_INIT, DISK_LEFT, DISK_RESERVED, IS_ENABLED, FLAG, DATA1, MAX_VM_NUM, MAX_SHARED_CORE
+		FROM
+			HOST_INFO
+		WHERE
+			IS_ENABLED = 3
+		<if test="status != null">
+			AND
+				`STATUS` = #{status}
+		</if>
+		<if test="flag != null">
+			AND
+				FLAG = #{flag}
+		</if>
+		<if test="data1 != null">
+			AND
+				DATA1 = #{data1}
+		</if>
+	</select>
+	
+	<select id="selectVmCount" parameterType="String" resultType="int">
+		SELECT
+			COUNT(*)
+		FROM
+			VM_INFO
+		WHERE
+			IS_DELETED = 0
+		AND
+			IS_ENABLED = 1
+		AND
+			HOST_ID = #{hostId}
+	</select>
+	
+	<select id="selectVmCountForAll" resultType="hostInfo">
+		SELECT
+			HOST_ID,
+			COUNT(HOST_ID) AS VM_NUM
+		FROM
+			VM_INFO
+		WHERE
+			IS_DELETED = 0
+		AND
+			IS_ENABLED = 1
+		GROUP BY
+			HOST_ID
+	</select>
+	
+	<select id="selectMemTotal" resultType="int">
+		SELECT
+			SUM(MEM_TOTAL) AS MEM_TOTAL
+		FROM
+			HOST_INFO
+		WHERE
+			`STATUS` != 'Unknown'
+		AND IS_ENABLED = 3;
+	</select>
+	
+	<select id="selectMemLeft" resultType="int">
+		SELECT
+			SUM(MEM_LEFT) AS MEM_LEFT_TOTAL
+		FROM
+			HOST_INFO
+		WHERE
+			`STATUS` != 'Unknown'
+		AND IS_ENABLED = 3
+		AND FLAG != 'OFFLINE';
+	</select>
+	
+	<select id="selectMemUnopenTotal" resultType="int">
+		SELECT
+			SUM(MEM_TOTAL) AS UNOPEN_MEM_TOTAL
+		FROM
+			HOST_INFO
+		WHERE
+			`STATUS` != 'Unknown'
+		AND IS_ENABLED = 3
+		AND FLAG = 'OFFLINE';
+	</select>
+	
+	<select id="selectMemUsed" resultType="int">
+		SELECT
+			SUM(MEM) AS MEM_USED
+		FROM
+			VM_INFO
+		WHERE
+			IS_DELETED = 0
+		AND IS_ENABLED = 1;
+	</select>
+</mapper>
